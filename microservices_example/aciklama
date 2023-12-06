@@ -1,0 +1,21 @@
+Gunun sonunda olan sey su, workloads.yml bizim deploymentlari yaptigimiz script. Burada microserviceleri yarattik (ActiveMq , position-simulator , position-tracker , api-gateway , webapp)
+
+Gerekli microservicelerin ip alabilmesi icin serviceler tanimladik, services.yml kullanarak, bu microservisler ActiveMq , position-tracker , api-gateway , webapp
+
+Sonra dedik ki pod silindigi zaman gecmis datayi kaybetmeyelim, bunun icin mongodb kuralim datayi position trackerda degil orada saklayalim. Bunun icin iki sey yapmamiz gerekti, birincisi position-tracker microservicete bi release3'e gecmek, cunku burada kubernetes'in DNS servisini kullanarak service discovery yapip mongodb'nin IP adresini bulma ozelligi eklenmisti. Ki bu sayede mongodbyi kesfedebilsin ve baglanabilsin.Ikincisi de mongodb podu yaratmak oldu, official mongodb image'i kullandik. Mongo ile ilgili her seyi ayri bir yaml dosyasinda yapmaya karar verdik ve mongo-stack.yml kullandik. 
+Bu sayede position-tracker podu silinse bile artik gecmisi kaybetmedigimizi gorduk, cunku artik history mongodb podu uzerinde tutuluyordu. 
+
+Bu sefer de mongodb podunun silinmesi durumunda gecmisi kaybetme ihtimali vardi.
+Bunun icin de mongodb'nin datayi container disinda, ornegin bizim host'ta saklamasini saglayacak bir gelistirme yaptik. Bizim host = minikube (hyper-v host). 
+Bunu gerceklestirmek icin persistent volume kullandik, volume'u bizim minikube host'unda yarattik (name:  mongo-persistent-storage; directory --> /mnt/some/directory/structure) 
+container icindeki /data/db directorysini minikube hostumuzdaki /mnt/some/directory/structure path'e mount ettik. (hostPath kullandik local development oldugu icin) 
+
+Artik mongodb podunu sildigimizde dahi yeni yaratilan pod ile gecmis data kaybolmuyordu.
+
+
+Sonra dedik ki bu volume'u olusturma isini ileride yapilabilecek degisikliklere istinaden gelistirelim --> mongo-stack-PVC.yml  ve hostPath'i hardcode olarak oraya yazmak yerine persistentVolumeClaim kullanalim, claimname=mongo-vpc olsun ve bu volume'u baska bagimsiz bir script kullanarak olusturalim --> storage.yml
+Burada PersistentVolume'un fiziksel storage oldugunu ve PersistentVolumeClaim'in kubernetes tarafindan bu olusturulan volume'den allocation yaptigini anladik. PersistentVolume'un AWS'te EBS olabileceginden bahsettik. Bu storage scripti ile minikube localimizde local storage olusturduk -->  path: "/mnt/some new/directory/structure" yine hostPath kullandik.
+
+bu yeni db structure'ini ilk devreye aldigimizda eski datayi kaybettik cunku bu sefer /data/db directorysini minikube local hostumuzda  yeni bir directory'e mount etmis olduk. 
+
+Ama bu andan itibaren mongodb podunu silerek gecmis datanin yeni mount sayesinde tutuldugunu gorduk. 
