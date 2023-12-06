@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+  labels: 
+    app: mysql-vio   #  this is the label we will use as a selector in the service below.
+spec:
+  containers:
+    - name: mysql 
+      image: mysql:5
+      env:
+        # use secret in real life
+        - name: MYSQL_ROOT_PASSWORD
+          value: password 
+        - name: MYSQL_DATABASE
+          value: fleetman
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+spec:
+  selector:
+    app: mysql-vio  ## here we use the label app of the Pod
+  ports:
+    - port: 3306 
+  type: ClusterIP  # we are using the type=ClusterIP so that this service will only be accesible inside the kubernetes cluster (webapp container can access but outside the cluster can't)

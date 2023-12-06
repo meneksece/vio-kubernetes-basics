@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-first-pod-replicaset
+spec:
+  selector:   # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: webapp-replicaset
+  replicas: 2
+  template: #template for the pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: webapp-replicaset
+    spec:
+      containers:
+        - name: my-container
+          image: richardchesterwood/k8s-fleetman-webapp-angular:release0-5

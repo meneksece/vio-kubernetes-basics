@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-first-pod
+  labels:
+    # here we give key:value pair for the selector for a service to be able to get chosen as a pod.
+    app: webapp  
+spec:
+  containers:
+  - name: my-container
+    image: richardchesterwood/k8s-fleetman-webapp-angular:release0

@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-first-pod
+  labels:
+    # here we give key:value pair for the selector for a service to be able to get chosen as a pod.
+    app: webapp
+    release: "0"      #first pod's release
+spec:
+  containers:
+  - name: my-container
+    image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-first-pod-release-0-5
+  labels:
+    # here we give key:value pair for the selector for a service to be able to get chosen as a pod.
+    app: webapp
+    release: "0-5"        #second pod's release 
+spec:
+  containers:
+  - name: my-container
+    image: richardchesterwood/k8s-fleetman-webapp-angular:release0-5
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: queue-1
+  labels:
+    # here we give key:value pair for the selector for a service to be able to get chosen as a pod.
+    app: queue-1
+    release: "1"        #second pod's release 
+spec:
+  containers:
+  - name: my-container
+    image: richardchesterwood/k8s-fleetman-queue:release1
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+    - name: nginx
+      image: nginx

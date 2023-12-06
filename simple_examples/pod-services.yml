@@ -1,0 +1,90 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-webapp
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: webapp
+    release: "0-5"
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 80
+      nodePort: 30080
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster),if you are to use NodePort type, you need to specify the port above
+  type: NodePort
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-webapp-replicaset
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: webapp-replicaset
+    # release: "0-5"   -- we don't need this complexity when using replicaset, according to udemy instructor.
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 80
+      nodePort: 30060
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster),if you are to use NodePort type, you need to specify the port above
+  type: NodePort
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-queue-1
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: queue-1
+    release: "1"
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 8161
+      nodePort: 30050
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster),if you are to use NodePort type, you need to specify the port above
+  type: NodePort
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-webapp-d
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: webapp-d
+    # release: "0-5"   -- we don't need this complexity when using replicaset, according to udemy instructor.
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 80
+      nodePort: 30070
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster),if you are to use NodePort type, you need to specify the port above
+  type: NodePort
+
+
+

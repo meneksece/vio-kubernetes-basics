@@ -1,0 +1,111 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-queue
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: queue
+    # release: "1"  # here you don't need it for this service example, if you use it, it fails
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 8161
+      nodePort: 30010
+    
+    - name: endpoint
+      port: 61616       # the port that we use to send and receive messages.
+      # NodePort: 300xx     # we don't need a node port here because we're not going to be exposing this end point to the outside world, only internally in the cluster.
+      
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster),if you are to use NodePort type, you need to specify the port above
+  type: NodePort
+
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-position-tracker  # this name is what's gonna be used in any network calls! let's assume webapp pod will make a call to this service and it will use this name, literally. 
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: position-tracker
+    # release: "1"  # here you don't need it for this service example, if you use it, it fails
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 8080
+    #  nodePort: 30020  # we're NOT going to be exposing this end point to the outside world, so it must not be configured!
+    
+    # we dont need this second port here for position tracker.
+    #- name: endpoint 
+    #  port: 61616       # the port that we use to send and receive messages.
+      
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster, or outside),if you are to use NodePort type, you need to specify the port above
+  type: ClusterIP # use NodePort to expose the port to the outside world, use ClusterIP if you want to expose this pod inside the cluster only
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-api-gateway # this name is what's gonna be used in any network calls! let's assume webapp pod will make a call to this service and it will use this name, literally. 
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: api-gateway
+    # release: "1"  # here you don't need it for this service example, if you use it, it fails
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 8080
+      # nodePort: 30030   # we used it to be able to see from our webbrowser that the service is up and running! we dont have to expose this service to the outside world.
+    
+    # we dont need this second port here for position tracker.
+    #- name: endpoint 
+    #  port: 61616       # the port that we use to send and receive messages.
+      
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster, or outside),if you are to use NodePort type, you need to specify the port above
+  type: ClusterIP # use NodePort to expose the port to the outside world, use ClusterIP if you want to expose this pod inside the cluster only
+
+---
+#for the GUI
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-webapp # this name is what's gonna be used in any network calls! let's assume webapp pod will make a call to this service and it will use this name, literally. 
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: webapp
+    # release: "1"  # here you don't need it for this service example, if you use it, it fails
+  ports:
+    #our container is exposing port 80, so we declare that
+    # we're going to accept traffic on port 80 through this service and we're going to forward that traffic to port 80, that means on the container
+    - name: http
+      port: 80
+      nodePort: 30080   # we used it to be able to see from our webbrowser that the service is up and running! we dont have to expose this service to the outside world.
+    
+    # we dont need this second port here for position tracker.
+    #- name: endpoint 
+    #  port: 61616       # the port that we use to send and receive messages.
+      
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster, or outside),if you are to use NodePort type, you need to specify the port above
+  type: NodePort # use NodePort to expose the port to the outside world, use ClusterIP if you want to expose this pod inside the cluster only

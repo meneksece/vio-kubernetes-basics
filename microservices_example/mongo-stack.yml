@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment ## the only difference is between replica-set.yml and deployment.yml is this being Deployment instead of ReplicaSet
+metadata:
+  name: mongodb
+spec:
+  # minReadySeconds: 10 # this is the number of seconds that we want to newly create a pod to be ready!
+  selector: # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: mongodb #the name was too long, we changed it for this example!
+  replicas: 1
+  template: #template for the pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: mongodb    ### this will be chosen as a selector by the service!
+    spec:
+      containers:
+        - name: mongodb # this doesnt make any difference - it was webapp before
+          image: mongo:3.6.5-jessie
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db ##So, this is telling Kubernetes that the folder called /data/db,  inside the container, we want to mount to outside of the cluster. we still need to create a volume to mount it to.
+      # we need to set up the volume seperated from the containers section
+      volumes: 
+        - name: mongo-persistent-storage
+          hostPath:   ## we chose hostPath because we are doing local development and testing!
+            path: /mnt/some/directory/structure
+            type: DirectoryOrCreate
+
+---
+# since everything here is mongo related we can create deployment and pods and services in this yaml file...
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-mongodb # this name will become a DNS entry! this name is what's gonna be used in any network calls! let's assume webapp pod will make a call to this service and it will use this name, literally. 
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services or maybe external users to connect to (eg browser)
+  selector:
+    # you need to add the same key:value pair as a lable to create-pods.yml file so that it can choose the right pod!
+    app: mongodb
+    # release: "1"  # here you don't need it for this service example, if you use it, it fails
+  ports:
+   
+    # we use 27017 port as a default port for mongodb (you can check the manuels)
+    - name: mongoport
+      port: 27017
+
+  ## this is where we expose a port through the node(the entire kubernetes cluster, or outside),if you are to use NodePort type, you need to specify the port above
+  type: ClusterIP # use NodePort to expose the port to the outside world, use ClusterIP if you want to expose this pod inside the cluster only
+
+---
