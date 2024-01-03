@@ -26,7 +26,7 @@ spec:
         - name: mongo-persistent-storage
           ### pointer to the configuration of HOW we want the mount to be implemented instead of hardcoding with hostPath (for local development purposes or could be awsElasticBlockStore for AWS and so on)
           persistentVolumeClaim:   # we point it here to the config file of its own
-            claimName: mongo-vpc   
+            claimName: mongo-pvc   
             ## from here on we create seperate yaml file "storage.yml" matching the claim of mongo-vpc,  mongo-vpc is gonna claim some strorage somewhere and it will be defined in storage.yml
             # so with this PVC definition, we wouldnt have to make a change on the workload.yml when we wanted to move to cloud from local or when we want to migrate to another cloud provider...
             # we'd create a different storage.yml and proceed with that.
