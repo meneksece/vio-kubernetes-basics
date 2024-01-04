@@ -12,6 +12,8 @@
 # When we go further down we'll see that there is a StatefulSet. Also a special type of ReplicaSet. 
 # here you specify the number of replicas. Special thing here is Kubernetes will make sure that the pods 
 # that it creates won't be given a randomly generated name. The pods will be called (in this case) elasticsearch-logging0 and  elasticsearch-logging1
+# StatefulSet is used in special circumstances where you absolutely need to make sure that the pods always have a stable name.
+# This is often used in situations where you're doing things like clustering.
 
 apiVersion: v1
 kind: ServiceAccount
@@ -326,3 +328,5 @@ spec:
   selector:
     k8s-app: kibana-logging
   type: LoadBalancer
+
+# by default of the github config they were using a ClusterIP here but we changed it to have access to frontend
