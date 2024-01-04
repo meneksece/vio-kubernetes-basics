@@ -2,6 +2,17 @@
 # Fluentd configuration - this installs onto all nodes and gathers all logs
 # A separate yaml configures Fluentd
 #
+#the ServiceAccount and ClusterRole configuration is setting up some privileges to give in this case
+#FluentD access to what it needs to access on your cluster.
+#
+#Down there there are DeamonSets, a DeamonSet is very similar to a Replicaset or a Deployment 
+#the special thing about a DeamonSet is that we dont need to specify the number of replicas here. 
+# DeamonSet knows that this needs to run on every single node... So it's a special type of workload in Kubernetes.
+
+# When we go further down we'll see that there is a StatefulSet. Also a special type of ReplicaSet. 
+# here you specify the number of replicas. Special thing here is Kubernetes will make sure that the pods 
+# that it creates won't be given a randomly generated name. The pods will be called (in this case) elasticsearch-logging0 and  elasticsearch-logging1
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
