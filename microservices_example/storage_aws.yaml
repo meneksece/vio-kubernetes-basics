@@ -1,10 +1,10 @@
-# localstrorage - mongo vpc
+# localstrorage - mongo pvc
 
 # what do we want? We ask for the storage here..   "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims"
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongo-vpc    ## it matches the persistentVolumeClaim in mongo-stack-PVC.yml
+  name: mongo-pvc    ## it matches the persistentVolumeClaim in mongo-stack-PVC.yml
 spec:
   storageClassName: cloud-ssd  # to link the requirement (persistentVolumeClaim) and the provisioned storage (persistentVolume) we use storageClassName. So,
   # this persistentVolumeClaim is going to search across the entire cluster for any PersistentVolume it can find
