@@ -1,0 +1,40 @@
+# localstrorage - mongo vpc
+
+# what do we want? We ask for the storage here..   "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims"
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc    ## it matches the persistentVolumeClaim in mongo-stack-PVC.yml
+spec:
+  storageClassName: cloud-ssd  # to link the requirement (persistentVolumeClaim) and the provisioned storage (persistentVolume) we use storageClassName. So,
+  # this persistentVolumeClaim is going to search across the entire cluster for any PersistentVolume it can find
+  # which satisfies the req. of sufficient storage, correct access mode and with a matching label of mylocalstorage... 
+  # This process is called binding, it means at run time this persistentVolumeClaim will be satisfied with the persistentVolume 
+  # and therefore finally our mongo pod is going to be associated with this folder on the system.
+  accessModes: # this is required, depends on the provider,  "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 7Gi   # we specify here that K8S needs to go away and find 20Gigabytes of storage in a persistent volume 
+
+---
+
+# How do we want it implemented? What physical storage do we want to have in our K8s cluster? 
+# Important note here is that this persistent volume can be 100Gi, if we deploy this for example to the cloud now, 
+# we'd find that we have a hard drive created -an EBS volume- that will be pyhsically 100Gigabytes.
+# And above -in the persistentVolumeClaim block- it can be 20Gi and it says, "I need 20Gi of storage, Kubernetes please fulfill my request." 
+# So it'd search around for a match and finds enough physical storage in this persistentVolume to fullfil this requirement.
+# The other way around wouldn't work, if we ask for 100Gi as a request in persistentVolumeClaim block and if there is 20Gi physical storage in the persistentVolume block
+# this'd not be a match and wouldnt be a suitable implementation for the requirement we had. 
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: cloud-ssd
+provisioner: kubernetes.io/gce-pd
+parameters: 
+  type: pd-standard  #standart persistent drive
+    
+
+#the seperation above between persistentVolumeClaim and persistentVolume is really important. 
+# You could imagine that the admin of the cluster is in charge of provisioning the hard drives and so on, they can just work in persistentVolume field.
+# Whereas the developer who is responsable for setting up -in this case- the Mongo container they'd work in persistentVolumeClaim document to declare their needs.

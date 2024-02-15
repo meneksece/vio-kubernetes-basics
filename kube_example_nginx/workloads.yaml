@@ -1,0 +1,134 @@
+### for the Active MQ
+
+apiVersion: apps/v1
+kind: Deployment ## the only difference is between replica-set.yml and deployment.yml is this being Deployment instead of ReplicaSet
+metadata:
+  name: queue
+spec:
+  # minReadySeconds: 10 # this is the number of seconds that we want to newly create a pod to be ready!
+  selector: # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: queue #the name was too long, we changed it for this example!
+  replicas: 1
+  template: #template for the pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: queue
+    spec:
+      containers:
+        - name: queue # this doesnt make any difference - it was webapp before
+          image: richardchesterwood/k8s-fleetman-queue:release2 
+---
+
+### for the Position Simulator
+
+apiVersion: apps/v1
+kind: Deployment ## the only difference is between replica-set.yml and deployment.yml is this being Deployment instead of ReplicaSet
+metadata:
+  name: position-simulator 
+spec:
+  # minReadySeconds: 10 # this is the number of seconds that we want to newly create a pod to be ready!
+  selector: # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: position-simulator #the name was too long, we changed it for this example!
+  replicas: 1
+  template: #template for the pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: position-simulator
+    spec:
+      containers:
+        - name: position-simulator   # this doesnt make any difference - it was webapp before
+          image: richardchesterwood/k8s-fleetman-position-simulator:release2 
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: production-microservice  ### if you make a deliberate mistake of the env variable, you can see how to troubleshoot.
+
+---
+
+### for the Position Tracker  
+
+apiVersion: apps/v1
+kind: Deployment ## the only difference is between replica-set.yml and deployment.yml is this being Deployment instead of ReplicaSet
+metadata:
+  name: position-tracker  
+spec:
+  # minReadySeconds: 10 # this is the number of seconds that we want to newly create a pod to be ready!
+  selector: # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: position-tracker #the name was too long, we changed it for this example!
+  replicas: 1
+  template: #template for the pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: position-tracker
+    spec:
+      containers:
+        - name: position-tracker   # this doesnt make any difference - it was webapp before
+          image: richardchesterwood/k8s-fleetman-position-tracker:release3  # this is important!
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: production-microservice  ### if you make a deliberate mistake of the env variable, you can see how to troubleshoot.
+
+---
+
+### for the API Gateway  
+
+apiVersion: apps/v1
+kind: Deployment ## the only difference is between replica-set.yml and deployment.yml is this being Deployment instead of ReplicaSet
+metadata:
+  name: api-gateway
+spec:
+  # minReadySeconds: 10 # this is the number of seconds that we want to newly create a pod to be ready!
+  selector: # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: api-gateway #the name was too long, we changed it for this example!
+  replicas: 1
+  template: #template for the pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway   # this doesnt make any difference - it was webapp before
+          image: richardchesterwood/k8s-fleetman-api-gateway:release2  # this is important!
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: production-microservice  ### if you make a deliberate mistake of the env variable, you can see how to troubleshoot.
+
+
+---
+
+### for the GUI
+
+apiVersion: apps/v1
+kind: Deployment ## the only difference is between replica-set.yml and deployment.yml is this being Deployment instead of ReplicaSet
+metadata:
+  name: webapp
+spec:
+  # minReadySeconds: 10 # this is the number of seconds that we want to newly create a pod to be ready!
+  selector: # you decide here which pod is being managed by the replicaset, could be dev,test,uat,prod..  depends on the label!
+    matchLabels:
+      app: webapp #the name was too long, we changed it for this example!
+  replicas: 1
+  template: #template for the   pods
+    metadata:
+      #name: my-first-pod   #pods are being "managed" by a replicaset, we don't need to give them a name anymore.
+      labels:
+        # here we give key:value pair for the selector for a service to be able to get chosen as a pod, so it must be in the template!
+        app: webapp
+    spec:
+      containers:
+        - name: webapp   # this doesnt make any difference - it was webapp before
+          image: richardchesterwood/k8s-fleetman-webapp-angular:release2  # this is important!
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: production-microservice  ### if you make a deliberate mistake of the env variable, you can see how to troubleshoot.
