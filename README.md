@@ -18,4 +18,4 @@ storage.yaml here is currently defining that we want to store the mongo data in 
  Here, we understood that PersistentVolume is physical storage, and PersistentVolumeClaim allocates from this created volume by Kubernetes. We mentioned that PersistentVolume could be EBS in AWS. With this storage script, we created local storage in our minikube --> path: "/mnt/some new/directory/structure" again, we used hostPath.
  
 When we put this new db structure into operation, we lost the old data because this time we mounted the /data/db directory to a new directory on our minikube local host. But from that moment on, we saw that by deleting the MongoDB pod, past data is held thanks to the new mount.
-![image](https://github.com/meneksece/vio-kubernetes-basics/assets/52826602/2050d848-8c70-490c-b1d3-c31732785fcf)
+
