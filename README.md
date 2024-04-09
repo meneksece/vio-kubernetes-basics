@@ -1,5 +1,7 @@
 
 Explanation of microservices example
+
+
 At the end of the day, what happens is that the workloads.yml is our script where we deploy microservices. Here, we created microservices (ActiveMq, position-simulator, position-tracker, api-gateway, webapp).
  
 To enable the necessary microservices to get IPs, we defined services using services.yml, these microservices being ActiveMq, position-tracker, api-gateway, webapp.
